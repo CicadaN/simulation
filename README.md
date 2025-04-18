@@ -31,5 +31,5 @@
 
 ```bash
 git clone https://github.com/CicadaN/simulation.git
-cd simulation/src/main
+cd simulation/src/main/java/io/example
 java Main.java
