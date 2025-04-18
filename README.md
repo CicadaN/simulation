@@ -30,6 +30,6 @@
 ## 🔧 Как запустить
 
 ```bash
-git clone https://github.com/yourname/simulation.git
+git clone https://github.com/CicadaN/Page-Analyzer.git
 cd simulation/src/main
 java Main.java
