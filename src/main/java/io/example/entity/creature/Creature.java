@@ -8,10 +8,12 @@ public abstract class Creature extends Entity {
 
     protected int speed;
     protected int health;
+    protected int foodValue;
 
     public Creature(int speed, int health, int foodValue) {
         this.speed = speed;
         this.health = health;
+        this.foodValue = foodValue;
     }
 
     public abstract Position makeMove(WorldMap map, Position position);
