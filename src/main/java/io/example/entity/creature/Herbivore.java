@@ -1,6 +1,5 @@
 package io.example.entity.creature;
 
-import io.example.Main;
 import io.example.entity.Grass;
 import io.example.map.Position;
 import io.example.map.WorldMap;

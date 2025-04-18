@@ -20,10 +20,6 @@ public class InitAction implements Action {
 
     private final Random random = new Random();
 
-    int addedHerbivores = 0;
-    int addedPredators = 0;
-    int addedGrass = 0;
-
     public InitAction(int numHerbivores, int numPredators, int numGrass) {
         this.numGrass = numGrass;
         this.numPredators = numPredators;
@@ -39,21 +35,15 @@ public class InitAction implements Action {
 
         for (int i = 0; i < numHerbivores && index < positionList.size(); i++) {
             map.addEntity(positionList.get(index++), new Herbivore());
-            addedHerbivores++;
         }
         for (int i = 0; i < numPredators && index < positionList.size(); i++) {
             map.addEntity(positionList.get(index++), new Predator(attackPower));
-            addedPredators++;
         }
         for (int i = 0; i < numGrass && index < positionList.size(); i++) {
             map.addEntity(positionList.get(index++), new Grass());
-            addedGrass++;
         }
         for (int i = 0; i < DEFAULT_TREES && index < positionList.size(); i++) {
             map.addEntity(positionList.get(index++), new Tree());
         }
-        System.out.printf("Создано: %d травоядных, %d хищников, %d трав\n",
-                addedHerbivores, addedPredators, addedGrass);
     }
-
 }

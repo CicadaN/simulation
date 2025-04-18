@@ -50,7 +50,7 @@ public class AStarPathFinder {
         path.add(current);
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
-            path.add(0, current);
+            path.addFirst(current);
         }
         return path;
     }

@@ -15,7 +15,7 @@ public class Menu {
         System.out.println("2. Настроить параметры вручную");
         System.out.print("Выберите вариант: ");
 
-        int choice = readInt(1, 2);
+        int choice = readInt();
         
         return choice == 1 ? getDefaultConfig() : getCustomConfig();
     }
@@ -98,7 +98,7 @@ public class Menu {
         }
     }
 
-    private int readInt(int min, int max) {
-        return readInt("", min, max);
+    private int readInt() {
+        return readInt("", 1, 2);
     }
 } 
