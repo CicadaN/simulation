@@ -17,18 +17,18 @@ public class AddGrassAction implements Action {
 
     //TODO проверка на заполнение карты
     @Override
-    public void execute(WorldMap map) {
+    public void execute(WorldMap worldMap) {
         for (int i = 0; i < count; i++) {
-            Position position = getRandomPosition(map);
-            if (!map.isOccupied(position)) {
-                map.addEntity(position, new Grass());
+            Position position = getRandomPosition(worldMap);
+            if (!worldMap.isOccupied(position)) {
+                worldMap.addEntity(position, new Grass());
             }
         }
     }
 
-    private Position getRandomPosition(WorldMap map) {
-        int x = random.nextInt(map.getWidth());
-        int y = random.nextInt(map.getHeight());
+    private Position getRandomPosition(WorldMap worldMap) {
+        int x = random.nextInt(worldMap.getWidth());
+        int y = random.nextInt(worldMap.getHeight());
         return new Position(x, y);
     }
 } 

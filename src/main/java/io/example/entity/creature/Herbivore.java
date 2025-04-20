@@ -1,5 +1,6 @@
 package io.example.entity.creature;
 
+import io.example.entity.Entity;
 import io.example.entity.Grass;
 import io.example.map.Position;
 import io.example.map.WorldMap;
@@ -20,26 +21,16 @@ public class Herbivore extends Creature {
     }
 
     @Override
-    public Position makeMove(WorldMap map, Position currentPosition) {
-        Predicate<Position> isGoal = pos ->
-                map.getEntity(pos).filter(e -> e instanceof Grass).isPresent();
-
-        List<Position> path = pathFinder.findPath(map, currentPosition, isGoal);
-
-        if (!path.isEmpty()) {
-            int stepIndex = Math.min(speed, path.size() - 1);
-            return path.get(stepIndex);
-        }
-
-        return currentPosition;
-    }
-
-    public void eat() {
-        this.health = Math.min(MAX_HEALTH, this.health + FOOD_VALUE);
+    protected boolean isFood(Entity entity) {
+        return entity instanceof Grass;
     }
 
     public int getMaxHealth() {
         return MAX_HEALTH;
+    }
+
+    public void eat() {
+        this.health = Math.min(MAX_HEALTH, this.health + FOOD_VALUE);
     }
 
 }

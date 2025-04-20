@@ -5,37 +5,42 @@ import io.example.simulation.Simulation;
 import io.example.simulation.actions.*;
 import io.example.simulation.config.Menu;
 import io.example.simulation.config.SimulationConfig;
+import io.example.simulation.interaction.CreatureInteractionHandler;
 import io.example.simulation.render.ConsoleRenderer;
 
 import java.util.List;
 
 public class Main {
-
     public static void main(String[] args) {
-
+        // Получаем конфигурацию
         Menu menu = new Menu();
-        SimulationConfig config = menu.showMenu();
+        SimulationConfig config = menu.buildConfigWithMenu();
 
-        WorldMap map = new WorldMap(config.getWidth(), config.getHeight());
+        // Создаём карту
+        WorldMap worldMap = new WorldMap(config.getWidth(), config.getHeight());
 
-        List<Action> initActions = List.of(
-            new InitAction(
+        // Создаём обработчик взаимодействий
+        CreatureInteractionHandler interactionHandler = new CreatureInteractionHandler(worldMap);
+
+        // Список начальных действий
+        Action init = new InitAction(
                 config.getHerbivoresCount(),
                 config.getPredatorsCount(),
-                config.getGrassCount()
-            )
+                config.getGrassCount(),
+                config.getTreeCount(),
+                config.getRockCount()
         );
 
+        // Список действий хода
+        Action move = new MoveCreaturesAction(interactionHandler);
         List<Action> turnActions = List.of(
-            new MoveCreaturesAction(map),
-            new AddGrassAction(config.getGrassPerTurn())
+                new RemoveDeadCreaturesAction(),
+                new MoveCreaturesAction(interactionHandler)
         );
 
         ConsoleRenderer renderer = new ConsoleRenderer();
 
-        Simulation simulation = new Simulation(map, initActions, turnActions, renderer);
-
+        Simulation simulation = new Simulation(worldMap, List.of(init), turnActions, renderer);
         simulation.start();
     }
 }
-

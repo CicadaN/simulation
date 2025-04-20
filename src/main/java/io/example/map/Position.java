@@ -20,12 +20,8 @@ public class Position {
         return y;
     }
 
-    public Position move(int dx, int dy) {
+    public Position offset(int dx, int dy) {
         return new Position(x + dx, y + dy);
-    }
-
-    public int getDistance(Position pos) {
-        return Math.abs(x - pos.x) + Math.abs(y - pos.y);
     }
 
     @Override

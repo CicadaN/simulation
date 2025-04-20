@@ -27,29 +27,45 @@ public class Simulation {
     }
 
     public void nextTurn() {
-        System.out.printf("=== Turn #%d ===%n", ++turnCounter);
         for (Action action : turnActions) {
             action.execute(map);
         }
-        renderer.render(map);
+
+        renderer.render(map, ++turnCounter);
+
+        if (isSimulationOver()) {
+            System.out.println("Симуляция завершена — одна из сторон исчезла.");
+            stop();
+        }
     }
+
+    private boolean isSimulationOver() {
+        boolean hasHerbivores = map.getEntitiesSnapshot().values().stream()
+                .anyMatch(e -> e instanceof io.example.entity.creature.Herbivore);
+        boolean hasPredators = map.getEntitiesSnapshot().values().stream()
+                .anyMatch(e -> e instanceof io.example.entity.creature.Predator);
+
+        return !hasHerbivores || !hasPredators;
+    }
+
 
     public void start() {
         running = true;
+        turnCounter = 1;
 
-        System.out.println("=== Initializing Simulation ===");
+        System.out.println("=== Запуск симуляции ===");
         for (Action action : initActions) {
             action.execute(map);
         }
 
-        renderer.render(map);
+        renderer.render(map, turnCounter);
 
         while (running) {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Simulation interrupted.");
+                System.out.println("Симуляция прервана.");
                 break;
             }
 

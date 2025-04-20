@@ -1,11 +1,7 @@
 package io.example.entity.creature;
 
-import io.example.map.Position;
-import io.example.map.WorldMap;
+import io.example.entity.Entity;
 import io.example.pathfinder.AStarPathFinder;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 public class Predator extends Creature {
 
@@ -23,18 +19,8 @@ public class Predator extends Creature {
     }
 
     @Override
-    public Position makeMove(WorldMap map, Position currentPosition) {
-        Predicate<Position> isGoal = pos ->
-                map.getEntity(pos).filter(e -> e instanceof Herbivore).isPresent();
-
-        List<Position> path = pathFinder.findPath(map, currentPosition, isGoal);
-
-        if (!path.isEmpty()) {
-            int stepIndex = Math.min(speed, path.size() - 1);
-            return path.get(stepIndex);
-        }
-
-        return currentPosition;
+    protected boolean isFood(Entity entity) {
+        return entity instanceof Herbivore;
     }
 
     public void attack(Herbivore herbivore) {
@@ -46,6 +32,6 @@ public class Predator extends Creature {
     }
 
     public int getMaxHealth() {
-        return MAX_HEALTH; // у Herbivore и Predator он static final
+        return MAX_HEALTH;
     }
 }

@@ -3,85 +3,114 @@ package io.example.simulation.config;
 import java.util.Scanner;
 
 public class Menu {
+    private static final int MAP_SIZE_MIN = 5;
+    private static final int MAP_SIZE_MAX = 20;
+    private static final int GRASS_PER_TURN_MIN = 1;
+    private static final int GRASS_PER_TURN_MAX = 3;
+
+    private static final int DEFAULT_WIDTH = 10;
+    private static final int DEFAULT_HEIGHT = 10;
+    private static final int DEFAULT_HERBIVORES = 5;
+    private static final int DEFAULT_PREDATORS = 2;
+    private static final int DEFAULT_GRASS = 8;
+    private static final int DEFAULT_GRASS_PER_TURN = 1;
+    private static final int DEFAULT_TREES = 10;
+    private static final int DEFAULT_ROCK = 5;
+
     private final Scanner scanner;
 
     public Menu() {
         this.scanner = new Scanner(System.in);
     }
 
-    public SimulationConfig showMenu() {
+    public SimulationConfig buildConfigWithMenu() {
         System.out.println("=== Симуляция мира ===");
         System.out.println("1. Запустить с настройками по умолчанию");
         System.out.println("2. Настроить параметры вручную");
         System.out.print("Выберите вариант: ");
 
-        int choice = readInt();
-        
+        int choice = readInt("", 1, 2);
         return choice == 1 ? getDefaultConfig() : getCustomConfig();
     }
 
     private SimulationConfig getDefaultConfig() {
-        return new SimulationConfig(
-            10,  // width
-            10,  // height
-            5,   // herbivores
-            2,   // predators
-            8,   // grass
-            1    // grass per turn
-        );
+        return new SimulationConfig.Builder()
+                .width(DEFAULT_WIDTH)
+                .height(DEFAULT_HEIGHT)
+                .herbivores(DEFAULT_HERBIVORES)
+                .predators(DEFAULT_PREDATORS)
+                .grass(DEFAULT_GRASS)
+                .grassPerTurn(DEFAULT_GRASS_PER_TURN)
+                .rocks(DEFAULT_ROCK)
+                .trees(DEFAULT_TREES)
+                .build();
     }
 
     private SimulationConfig getCustomConfig() {
         System.out.println("\n=== Настройка параметров ===");
 
-        int width = readInt("Введите ширину карты (5-20): ", 5, 20);
-        int height = readInt("Введите высоту карты (5-20): ", 5, 20);
+        int width = readInt(
+                "Введите ширину карты (%d-%d): ".formatted(MAP_SIZE_MIN, MAP_SIZE_MAX),
+                MAP_SIZE_MIN, MAP_SIZE_MAX
+        );
 
-        final int DEFAULT_TREES = 10;
+        int height = readInt(
+                "Введите высоту карты (%d-%d): ".formatted(MAP_SIZE_MIN, MAP_SIZE_MAX),
+                MAP_SIZE_MIN, MAP_SIZE_MAX
+        );
+
         int totalCells = width * height;
-
-        // Не более 50% клеток под динамические сущности, оставим остальное под свободу
         int maxAvailableEntities = (totalCells - DEFAULT_TREES) / 2;
 
         if (maxAvailableEntities < 3) {
-            System.out.println("Недостаточно места для симуляции. Попробуйте уменьшить размер деревьев или увеличить карту.");
+            System.out.println("Недостаточно места для симуляции. Значения по умолчанию.");
             return getDefaultConfig();
         }
 
         int herbivores = readInt(
-                "Введите количество травоядных (1-" + maxAvailableEntities + "): ",
+                "Введите количество травоядных (1-%d): ".formatted(maxAvailableEntities),
                 1, maxAvailableEntities
         );
 
-        int freeAfterHerbivores = maxAvailableEntities - herbivores;
-
+        int remaining = maxAvailableEntities - herbivores;
         int predators = 0;
-        if (freeAfterHerbivores > 0) {
+        if (remaining > 0) {
             predators = readInt(
-                    "Введите количество хищников (1-" + freeAfterHerbivores + "): ",
-                    1, freeAfterHerbivores
+                    "Введите количество хищников (1-%d): ".formatted(remaining),
+                    1, remaining
             );
         } else {
-            System.out.println("Недостаточно места для хищников. Они не будут добавлены.");
+            System.out.println("Недостаточно места для хищников.Они не будут добавлены.");
         }
 
-        int freeAfterPredators = freeAfterHerbivores - predators;
-
+        remaining -= predators;
         int grass = 0;
-        if (freeAfterPredators > 0) {
+        if (remaining > 0) {
             grass = readInt(
-                    "Введите количество травы (1-" + freeAfterPredators + "): ",
-                    1, freeAfterPredators
+                    "Введите количество травы (1-%d): ".formatted(remaining),
+                    1, remaining
             );
         } else {
             System.out.println("Недостаточно места для травы. Она не будет добавлена.");
         }
 
-        int grassPerTurn = readInt("Введите количество восстанавливаемой травы за ход (1-3): ", 1, 3);
+        int grassPerTurn = readInt(
+                "Введите количество восстанавливаемой травы за ход (%d-%d): ".formatted(GRASS_PER_TURN_MIN, GRASS_PER_TURN_MAX),
+                GRASS_PER_TURN_MIN, GRASS_PER_TURN_MAX
+        );
 
-        return new SimulationConfig(width, height, herbivores, predators, grass, grassPerTurn);
+        return new SimulationConfig.Builder()
+                .width(width)
+                .height(height)
+                .herbivores(herbivores)
+                .predators(predators)
+                .grass(grass)
+                .grassPerTurn(grassPerTurn)
+                .rocks(DEFAULT_ROCK)     // можно тоже сделать настраиваемым позже
+                .trees(DEFAULT_TREES)    // см. выше
+                .build();
+
     }
-
 
     private int readInt(String prompt, int min, int max) {
         while (true) {
@@ -91,14 +120,10 @@ public class Menu {
                 if (value >= min && value <= max) {
                     return value;
                 }
-                System.out.printf("Введите число от %d до %d\n", min, max);
+                System.out.printf("Введите число от %d до %d%n", min, max);
             } catch (NumberFormatException e) {
                 System.out.println("Введите корректное число");
             }
         }
     }
-
-    private int readInt() {
-        return readInt("", 1, 2);
-    }
-} 
+}
